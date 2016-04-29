@@ -45,13 +45,14 @@ if (isset($_POST['username'], $_POST['email'], $_POST['p'])) {
  
     if (empty($error_msg)) {
         // Crie um salt aleatório
+        echo $password;
         $random_salt = hash('sha512', uniqid(openssl_random_pseudo_bytes(16), TRUE));
  
         // Crie uma senha com salt 
         $password = hash('sha512', $password . $random_salt);
  
         // Inserir o novo usuário no banco de dados 
-        if ($insert_stmt = $mysqli->prepare("INSERT INTO sr_usuarios_secret (username, email, password, salt, ativo) VALUES (?, ?, ?, ?, '0')")) {
+        if ($insert_stmt = $mysqli->prepare("INSERT INTO sr_usuarios_secret (username, email, password, salt) VALUES (?, ?, ?, ?)")) {
             $insert_stmt->bind_param('ssss', $username, $email, $password, $random_salt);
 			 // Executar a tarefa pré-estabelecida.
             if (! $insert_stmt->execute()) {
@@ -59,6 +60,6 @@ if (isset($_POST['username'], $_POST['email'], $_POST['p'])) {
             }
         }
 		
-        header('Location: ./index.php');
+        //header('Location: ./index.php');
     }
 }

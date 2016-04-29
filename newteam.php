@@ -15,7 +15,7 @@ include_once 'includes/functions.php';
 	<meta name="description" content="Bem-Vindo ao CTF Sucuri HC " />
 	<meta name="author" content="" />
 
-	<title>CTF-H4K Profile</title>
+	<title>CTF-H4K Novo Team</title>
   
 	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
 	<script src="assets/js/jquery.min.js"></script>
@@ -44,13 +44,13 @@ include_once 'includes/functions.php';
 
 </head>
 <?php
-if (isset($_POST['username'])) {
-    $username = $_POST['username']; 
+if (isset($_POST['teamname'])) {
+    $teamname = $_POST['teamname']; 
     
-	if (atualizanome($mysqli, $username) == true) {
-	  echo '<script>alert("Username Alterado com sucesso!")</script>';
+	if (inserenewteam($mysqli,$teamname) == true) {
+	  echo '<script>alert("Team Alterado com sucesso!")</script>';
     } else {
-      echo '<script>alert("Não foi possivel alterar para esse username!")</script>';
+      echo '<script>alert("Não foi possivel Criar um novo time com esse nome!")</script>';
     }
 	
 }
@@ -75,7 +75,7 @@ if (isset($_POST['username'])) {
 					</a>
 				</li>
 				<li class="opened active">
-					<a href="#">
+					<a href="profile.php">
 						<i class="entypo-user"></i>
 						<span class="title">Profile</span>
 					</a>
@@ -128,7 +128,7 @@ if (isset($_POST['username'])) {
 					
 						<div class="panel-heading">
 							<div class="panel-title">
-								Configurações Gerais
+								Novo Team
 							</div>
 							
 						</div>
@@ -136,86 +136,38 @@ if (isset($_POST['username'])) {
 						<div class="panel-body">
 				
 							<div class="form-group">
-								<label for="field-1" class="col-sm-3 control-label">Username:</label>
+								<label for="field-1" class="col-sm-3 control-label">Nome Team:</label>
 								
 								<div class="col-sm-5">
-									<input type="text" class="form-control" name="username" value="<?php carreganome($mysqli); ?>" autofocus>
+									<input type="text" class="form-control" name="teamname" value="<?php carreganometeam($mysqli); ?>" autofocus>
 								</div>
 							</div>
-			
 							<div class="form-group">
-								<label for="field-2" class="col-sm-3 control-label">Time:</label>
+								<label for="field-1" class="col-sm-3 control-label">Hash Team:</label>
 								
 								<div class="col-sm-5">
-									<input type="text" class="form-control" id="time" value="<?php carreganometeam($mysqli); ?>">
+									<input type="text" class="form-control" name="hash" value="<?php carregahashteam($mysqli); ?>">
 								</div>
 							</div>
 
 							<div class="form-group">
-								<div <div class="col-sm-offset-3 col-sm-5">
-									<button type="submit" class="btn btn-success">Salvar Alterações</button>
-								</div> 
+								<label for="field-1" class="col-sm-3 control-label"></label>
+								
+								<div class="col-sm-5">
+									<button type="submit" class="btn btn-success">|||Cadastrar|||</button>
+								</div>
 							</div>
-			
+						
 						</div>
 					
 					</div>
 				
 				</div>
 			</div>
+												
+			
 						
 		</form>
-
-		<div class="row">
-			<div class="col-sm-3 col-xs-6">
-		
-				<div class="tile-stats tile-green">
-					<div class="icon"><i class="entypo-flag"></i></div>
-					<div class="num" data-start="0" data-end="<?php totalflagresolvidas($mysqli); ?>" data-postfix="" data-duration="1500" data-delay="0">0</div>
-		
-					<h3>Flags Resolvidas</h3>
-					<p>All events</p>
-				</div>
-		
-			</div>
-		
-			<div class="col-sm-3 col-xs-6">
-		
-				<div class="tile-stats tile-blue">
-					<div class="icon"><i class="entypo-chart-bar"></i></div>
-					<div class="num" data-start="0" data-end="<?php totaleventos($mysqli); ?>" data-postfix="" data-duration="1500" data-delay="600">0</div>
-		
-					<h3>Eventos</h3>
-					<p> :)</p>
-				</div>
-		
-			</div>
-		
-			<div class="col-sm-3 col-xs-6">
-		
-				<div class="tile-stats tile-green">
-					<div class="icon"><i class="entypo-infinity"></i></div>
-					<div class="num" data-start="0" data-end="<?php totalpontos($mysqli); ?>" data-postfix="" data-duration="1500" data-delay="1200">0</div>
-		
-					<h3>Pontos</h3>
-					<p>Totalizador de todos eventos!</p>
-				</div>
-		
-			</div>
-		
-			<div class="col-sm-3 col-xs-6">
-		
-				<div class="tile-stats tile-blue">
-					<div class="icon"><i class="entypo-calendar"></i></div>
-					<div class="num" data-start="0" data-end="0" data-postfix="" data-duration="1500" data-delay="1800">0</div>
-		
-					<h3>Em breve</h3>
-					<p>Totalizador Team</p>
-				</div>
-		
-			</div>
-		</div>
-		
 				
 				
 				
@@ -245,6 +197,7 @@ if (isset($_POST['username'])) {
                 <span class="error">Você não tem autorização para acessar esta página.</span> Login <a href="../index.php">login</a>.
             </p>
         <?php endif; ?>
+
 
     <script src="assets/js/gsap/main-gsap.js"></script>
 	<script src="assets/js/joinable.js"></script>

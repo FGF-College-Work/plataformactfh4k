@@ -2,9 +2,11 @@
 include_once 'includes/db_connect.php';
 include_once 'includes/functions.php';
  sec_session_start();
+
+
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -13,15 +15,15 @@ include_once 'includes/functions.php';
 	<meta name="description" content="Bem-Vindo ao CTF Sucuri HC " />
 	<meta name="author" content="" />
 
-	<title>CTF-H4K</title>
+	<title>CTF-H4K Enter Team</title>
   
 	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
 	<script src="assets/js/jquery.min.js"></script>
 	<script src="assets/js/bootstrap.min.js"></script>
-  
+	<link rel="stylesheet" href="assets/css/flipclock.css">
+
 
 	<link rel="stylesheet" href="assets/css/font-icons/entypo/css/entypo.css">
-	<!--<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Noto+Sans:400,700,400italic">-->
 	<link rel="stylesheet" href="assets/css/bootstrap.css">
 	<link rel="stylesheet" href="assets/css/neon-core.css">
 	<link rel="stylesheet" href="assets/css/neon-theme.css">
@@ -37,13 +39,25 @@ include_once 'includes/functions.php';
 	<!--[if lt IE 9]>
 		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
 		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-		
 	<![endif]-->
 
 
 </head>
+<?php
+if (isset($_POST['teamhash'])) {
+    $teamhash = $_POST['teamhash']; 
+    	
+	if (enterteam($mysqli,$teamhash) == true) {
+	  
+    } else {
+      echo '<script>alert("Não foi possivel entrar com esse HashTeam!")</script>';
+    }
+	
+}
+?>
+
 <body class="page-body">
-<?php //if (login_check($mysqli) == true) : ?>
+<?php if (login_check($mysqli) == true) : ?>
 <div class="page-container horizontal-menu">
 
 	
@@ -54,22 +68,37 @@ include_once 'includes/functions.php';
 			<!-- main menu -->
 						
 			<ul class="navbar-nav">
-				<li>
-					<a href="sucuri.php">
-						<i class="entypo-gauge"></i>
-						<span class="title">Flags</span>
-					</a>
-					<li>
+				<li class="opened active">
 					<a href="eventos.php">
-						<i class="entypo-layout"></i>
+						<i class="entypo-gauge"></i>
 						<span class="title">Eventos</span>
 					</a>
 				</li>
-					<li  class="opened active">
+				<li class="opened active">
+					<a href="profile.php">
+						<i class="entypo-user"></i>
+						<span class="title">Profile</span>
+					</a>
+				</li>
+				<li class="">
 					<a href="#">
 						<i class="entypo-layout"></i>
-						<span class="title">Scoreboard</span>
+						<span class="title">Team</span>
 					</a>
+					<ul>
+						<li>
+							<a href="newteam.php">
+							<i class="entypo-layout"></i>
+							<span class="title">Novo Team</span>
+							</a>
+						</li>
+						<li>
+							<a href="enterteam.php">
+							<i class="entypo-layout"></i>
+							<span class="title">Enter Team</span>
+							</a>
+						</li>
+					</ul>
 				</li>
 			</ul>
 						
@@ -89,36 +118,61 @@ include_once 'includes/functions.php';
 
 		<div class="container">
 			<div class="row">
-                <br><br>
+                
+				<form role="form" method="post" class="form-horizontal form-groups-bordered validate" action="">
+		
+			<div class="row">
 				<div class="col-md-12">
-	            <center><img src="assets/images/1logo.png"></center>			
-				<h4>RANKING: EVENTO SUCURI HC</h4>
-				<table class="table table-bordered">
-					<thead>
-						<tr>
-							<th><center>#</center></th>
-							<th><center>NOME</center></th>
-							<th><center>TEAM</center></th>
-                            <th><center>PONTUAÇÃO</center></th>
-						</tr>
-					</thead>
 					
-					<tbody>
-						<?php ranking($mysqli, '1'); ?>
-					</tbody>
-				</table>
+					<div class="panel panel-primary" data-collapsed="0">
+					
+						<div class="panel-heading">
+							<div class="panel-title">
+								Entrar em um Team
+							</div>
+							
+						</div>
+						
+						<div class="panel-body">
+				
+							<div class="form-group">
+								<label for="field-1" class="col-sm-3 control-label">Digite o HashTeam:</label>
+								
+								<div class="col-sm-5">
+									<input type="text" class="form-control" name="teamhash" value="<?php carreganometeam($mysqli); ?>" autofocus>
+								</div>
 
-                </div>
+							</div>
+							
+							<div class="form-group">
+								<label for="field-1" class="col-sm-3 control-label"></label>
+								
+								<div class="col-sm-5">
+									<button type="submit" class="btn btn-success">||| Entrar |||</button>
+								</div>
+							</div>
+						
+						</div>
+					
+					</div>
+				
+				</div>
+			</div>
+												
+			
+						
+		</form>
+				
+				
+				
+				
               </div>
-
-
-
-
+				
        <br><br>
-       <br><br>
-       <br><br>
-       <br><br>
-       <br><br>
+	   <br><br>
+	   <br><br>
+	   <br><br>
+	   
 <!-- Footer -->
 <footer class="main">
 	
@@ -131,41 +185,17 @@ include_once 'includes/functions.php';
 </div>
 </div>
 
-<!--teste-->
+<script src="assets/js/toastr.js"></script>
+	<?php else : ?>
+            <p>
+                <span class="error">Você não tem autorização para acessar esta página.</span> Login <a href="../index.php">login</a>.
+            </p>
+        <?php endif; ?>
 
-
-	<!-- Imported styles on this page -->
-	<link rel="stylesheet" href="assets/js/jvectormap/jquery-jvectormap-1.2.2.css">
-	<link rel="stylesheet" href="assets/js/rickshaw/rickshaw.min.css">
-
-	<!-- Bottom scripts (common) -->
-	<script src="assets/js/gsap/main-gsap.js"></script>
-	<script src="assets/js/jquery-ui/js/jquery-ui-1.10.3.minimal.min.js"></script>
-	<script src="assets/js/bootstrap.js"></script>
+    <script src="assets/js/gsap/main-gsap.js"></script>
 	<script src="assets/js/joinable.js"></script>
 	<script src="assets/js/resizeable.js"></script>
-	<script src="assets/js/neon-api.js"></script>
-	<script src="assets/js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
-
-
-	<!-- Imported scripts on this page -->
-	<script src="assets/js/jvectormap/jquery-jvectormap-europe-merc-en.js"></script>
-	<script src="assets/js/jquery.sparkline.min.js"></script>
-	<script src="assets/js/rickshaw/vendor/d3.v3.js"></script>
-	<script src="assets/js/rickshaw/rickshaw.min.js"></script>
-	<script src="assets/js/raphael-min.js"></script>
-	<script src="assets/js/morris.min.js"></script>
-	<script src="assets/js/toastr.js"></script>
-	<script src="assets/js/neon-chat.js"></script>
-
-
-	<!-- JavaScripts initializations and stuff -->
 	<script src="assets/js/neon-custom.js"></script>
-
-
-	<!-- Demo Settings -->
-	<script src="assets/js/neon-demo.js"></script>
-
 	
 </body>
 </html>

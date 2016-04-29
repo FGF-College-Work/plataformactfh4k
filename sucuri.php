@@ -2,7 +2,7 @@
 include_once 'includes/db_connect.php';
 include_once 'includes/functions.php';
 sec_session_start();
-inserescore($mysqli,'sucuri');
+inserescore($mysqli,'1');
 
 ?>
 <!DOCTYPE html>
@@ -53,7 +53,7 @@ if (isset($_POST['flag'], $_POST['order'])) {
     $flag = $_POST['flag'];
  
     
-	if (validaflag($mysqli, $id, $flag,'sucuri') == true) {
+	if (validaflag($mysqli, $id, $flag,'1') == true) {
 		
     } else {
       echo '<script>alert("Flag inválida!")</script>';
@@ -128,7 +128,6 @@ if (isset($_POST['flag'], $_POST['order'])) {
 							<th><center>REV</center></th>
                             <th><center>NET</center></th>
                             <th><center>CRIPTO</center></th>
-                            <th><center>XPL</center></th>
                             <th><center>CUSTOM</center></th>
 						</tr>
 					</thead>
@@ -136,37 +135,32 @@ if (isset($_POST['flag'], $_POST['order'])) {
 					<tbody>
 						<tr>
 							<td><strong><?php carreganome($mysqli); ?></strong></td>
-							<td><center><button type="button" class="btn btn-blue"><?php carregascore($mysqli, "sucuri"); ?></button></center></td>
+							<td><center><button type="button" class="btn btn-blue"><?php carregascore($mysqli, "1"); ?></button></center></td>
 							<!--botoes web -->
 							<td><center>
 							<?php
-							carregabotoes($mysqli,"web","sucuri"); 	
+							carregabotoes($mysqli,"web","1"); 	
 							?>
 							</center></td>
 							<!--botoes web -->
                             <td><center>
                             <?php
-							carregabotoes($mysqli,"rev","sucuri");
+							carregabotoes($mysqli,"rev","1");
 							?>
 							</center></td>
                             <td><center>
                             <?php
-							carregabotoes($mysqli,"net","sucuri");
+							carregabotoes($mysqli,"net","1");
 							?>
                             </center></td>
                             <td><center>
                              <?php
-							carregabotoes($mysqli,"cripto","sucuri");
-							?>
-                            </center></td>
-                             <td><center>
-                                <?php
-							carregabotoes($mysqli,"xpl","sucuri");
+							carregabotoes($mysqli,"cripto","1");
 							?>
                             </center></td>
                             <td><center>
                                 <?php
-							carregabotoes($mysqli,"custom","sucuri");
+							carregabotoes($mysqli,"custom","1");
 							?>
                             </center></td>
 						</tr>
@@ -194,12 +188,11 @@ if (isset($_POST['flag'], $_POST['order'])) {
 
 
 <!--web10-->
-<?php carregaflags($mysqli,'web','sucuri'); ?>
-<?php carregaflags($mysqli,'rev','sucuri'); ?>
-<?php carregaflags($mysqli,'net','sucuri'); ?>
-<?php carregaflags($mysqli,'cripto','sucuri'); ?>
-<?php carregaflags($mysqli,'xpl','sucuri'); ?>
-<?php carregaflags($mysqli,'custom','sucuri'); ?>
+<?php carregaflags($mysqli,'web','1'); ?>
+<?php carregaflags($mysqli,'rev','1'); ?>
+<?php carregaflags($mysqli,'net','1'); ?>
+<?php carregaflags($mysqli,'cripto','1'); ?>
+<?php carregaflags($mysqli,'custom','1'); ?>
 
 <!--web10-->
 

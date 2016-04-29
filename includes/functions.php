@@ -162,7 +162,6 @@ function esc_url($url) {
     if ('' == $url) {
         return $url;
     }
- 
     $url = preg_replace('|[^a-z0-9-~+_.?#=!&;,/:%@$\|*\'()\\x80-\\xff]|i', '', $url);
  
     $strip = array('%0d', '%0a', '%0D', '%0A');
@@ -303,7 +302,7 @@ function validaflag($mysqli,$flagid, $flag,$evento) {
 		$stmt->close();
 		//insere resolvidas
 		if ($resposta == $flag){
-		$mysqli->query("INSERT INTO resolvidas (flagid,userid,valor,evento) VALUES ('$flagid','$userid','$valor','$evento')");	
+		$mysqli->query("INSERT INTO resolvidas (flagid,userid,valor,evento, dhresposta) VALUES ('$flagid','$userid','$valor','$evento', NOW())");	
 		$total = 0;
 		// calcula score
 		if ($stmt = $mysqli->prepare("SELECT sum(valor) as valor
@@ -331,7 +330,7 @@ function validaflag($mysqli,$flagid, $flag,$evento) {
 
 
 function inserescore($mysqli,$evento) {
-$userid = $_SESSION['user_id'];
+$userid = htmlentities($_SESSION['user_id']);
 $dados = "INSERT INTO score (score,iduser,time,evento) VALUES ('0','$userid',NOW(),'$evento')";
 $mysqli->query($dados);	
 }
@@ -349,11 +348,11 @@ if ($mysqli->query($dados)) {
 
 function ranking($mysqli,$evento) {
 	$user_id = htmlentities($_SESSION['user_id']);
-    if ($stmt = $mysqli->prepare("SELECT score.iduser, score.score, sr_usuarios_secret.username
+    if ($stmt = $mysqli->prepare("SELECT score.iduser, score.score, sr_usuarios_secret.username,(select nome from team where idteam = sr_usuarios_secret.idteam)
         FROM `score`, `sr_usuarios_secret`
 		WHERE sr_usuarios_secret.Id = score.iduser and score.evento=? ORDER BY score.score DESC, time ASC
         ")) {
-        $stmt->bind_param('s', $evento);  // Relaciona  "$email" ao parâmetro.
+        $stmt->bind_param('i', $evento);  // Relaciona  "$email" ao parâmetro.
         $stmt->execute();
         $result = $stmt->get_result();
 		if ($result->num_rows > 0) {
@@ -363,7 +362,8 @@ function ranking($mysqli,$evento) {
 				echo'<tr>';
 				echo'<td><strong><center><h4>'.$i++.'º</h4></strong></center></td>';
 				echo'<td><strong><center><h4>'.$row[2].'</h4></strong></center></td>';
-				echo'<td><center><button type="button" class="btn btn-blue">'.$row[1].'</button></center></td>';
+				echo'<td><strong><center><h4>'.$row[3].'</h4></strong></center></td>';
+                echo'<td><center><button type="button" class="btn btn-blue">'.$row[1].'</button></center></td>';
 				echo'</tr>';
 			}
 		}
@@ -375,7 +375,7 @@ function ranking($mysqli,$evento) {
 function flagresolvida($flagid) {
 $HOST = "localhost";
 $USER = "root";
-$PASSWORD = "";
+$PASSWORD = "root";
 $DATABASE = "sucurihc_ctf";
 $conn1 = new mysqli($HOST, $USER, $PASSWORD, $DATABASE);
 if ($conn1->connect_error) {
@@ -394,6 +394,199 @@ if ($result1->num_rows > 0) {
 $conn1->close();
 }
 
+function inserenewteam($mysqli,$teamname) {
+$userid = $_SESSION['user_id'];
+$hash = md5($teamname.''.date('Y-m-d H:i:s'));
+$dados = "INSERT INTO team (nome,hash,adm) VALUES ('$teamname','$hash','$userid')";
+$result = $mysqli->query($dados); 
+if (!$result) {
+    return false;
+}else {
+    $ultimoid =  $mysqli->insert_id;
+    $dados = "UPDATE sr_usuarios_secret SET idteam='$ultimoid' WHERE id='$userid'";
+    $mysqli->query($dados);
+    return true;
+}
+}
+
+function carreganometeam($mysqli) {
+    $user_id = htmlentities($_SESSION['user_id']);
+    if ($stmt = $mysqli->prepare("SELECT team.nome
+        FROM sr_usuarios_secret, team
+        WHERE sr_usuarios_secret.idteam = team.idteam and sr_usuarios_secret.Id = ?
+        LIMIT 1")) {
+        $stmt->bind_param('i', $user_id); 
+        $stmt->execute();
+        $stmt->bind_result($nome);
+        $stmt->fetch();
+        echo $nome;
+        }
+}
+function carregahashteam($mysqli) {
+    $user_id = htmlentities($_SESSION['user_id']);
+    if ($stmt = $mysqli->prepare("SELECT team.hash
+        FROM sr_usuarios_secret, team
+        WHERE sr_usuarios_secret.idteam = team.idteam and sr_usuarios_secret.Id = ?
+        LIMIT 1")) {
+        $stmt->bind_param('i', $user_id); 
+        $stmt->execute();
+        $stmt->bind_result($hash);
+        $stmt->fetch();
+        echo $hash;
+        }
+}
+
+function enterteam($mysqli,$hashteam) {
+    if ($stmt = $mysqli->prepare("SELECT idteam,nome
+        FROM team
+        WHERE hash = ?
+        LIMIT 1")) {
+        $stmt->bind_param('s', $hashteam); 
+        $stmt->execute();
+        $stmt->bind_result($idteam,$nome);
+        $stmt->fetch();
+        $user_id = htmlentities($_SESSION['user_id']);
+        $stmt->close();
+        $dados = "UPDATE sr_usuarios_secret SET idteam='$idteam' WHERE id='$user_id'";
+        $result = $mysqli->query($dados);
+        if (!$result) {
+            return false;
+         }else {
+            echo '<script>alert("Bem-vindo ao '.$nome.'")</script>';
+            return true;
+        }
+
+    }
+}
+
+function carregaeventos($mysqli) {
+    $mysqli->set_charset("utf8");
+    if ($stmt = $mysqli->prepare("SELECT * 
+        FROM evento order by id desc
+        ")) {
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+        while ($row = $result->fetch_array(MYSQLI_NUM))
+            {
+                echo '<tbody>';
+                echo '      <tr>';
+                echo '      <td><strong>'.$row[1].'</strong></td>';
+                echo '      <td><center>'.$row[2].'</center></td>';
+                echo '      <td><center>'.$row[3].'</center></td>';
+                echo '      <td><center><button type="button" onclick="window.location='."'$row[4]'".'" class="btn btn-blue">iniciar</button></center></td>';
+                echo '      <td><center><button type="button" onclick="window.location='."'$row[5]'".'" class="btn btn-blue">Ranking</button></center></td>';
+                echo '   </tr>';
+                echo '</tbody>';
+            }
+        }
+    }
+}
+
+function totalflagresolvidas($mysqli) {
+    $user_id = htmlentities($_SESSION['user_id']);
+    if ($stmt = $mysqli->prepare("SELECT count(flagid) as total
+        FROM resolvidas
+        WHERE userid = ?
+        LIMIT 1")) {
+        $stmt->bind_param('i', $user_id); 
+        $stmt->execute();
+        $stmt->bind_result($total);
+        $stmt->fetch();
+        echo $total;
+        }
+}
+function totaleventos($mysqli) {
+    $user_id = htmlentities($_SESSION['user_id']);
+    if ($stmt = $mysqli->prepare("SELECT count(iduser) as total
+        FROM score
+        WHERE iduser = ?
+        LIMIT 1")) {
+        $stmt->bind_param('i', $user_id); 
+        $stmt->execute();
+        $stmt->bind_result($total);
+        $stmt->fetch();
+        echo $total;
+        }
+}
+function totalpontos($mysqli) {
+    $user_id = htmlentities($_SESSION['user_id']);
+    if ($stmt = $mysqli->prepare("SELECT sum(score) as total
+        FROM score
+        WHERE iduser = ?
+        LIMIT 1")) {
+        $stmt->bind_param('i', $user_id); 
+        $stmt->execute();
+        $stmt->bind_result($total);
+        $stmt->fetch();
+        echo $total;
+        }
+}
+
+
+function recoverypassword($mysqli,$email) {
+$email = htmlentities($email);
+$mysqli->set_charset("utf8");
+    if ($stmt = $mysqli->prepare("SELECT email 
+        FROM sr_usuarios_secret where email = ?
+        ")) {
+        $stmt->bind_param('s', $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+                $chave = sha1(uniqid( mt_rand(), true));
+                $dados = "INSERT INTO recuperacao VALUES ('$email', '$chave')";
+                $result = $mysqli->query($dados); 
+                if ($result) {
+                     $link = "http://ctf.sucurihc.org/recuperar.php?utilizador=$email&confirmacao=$chave";
+                    if( mail($email, 'Reset password', 'Olá '.$email.', visite este link '.$link) ){
+                        echo '<p>Foi enviado um e-mail para o seu endereço, onde poderá encontrar um link único para alterar a sua password</p>';
+                    }else {
+                        echo '<p>Houve um erro ao enviar o email (o servidor suporta a função mail?)</p>';
+                    }
+    
+                }else {
+                    echo 'Erro ao gerar link único!';
+                }
+            } else {
+                echo "Usuário não existe!";
+            }
+
+        }
+    }
+
+function validarecoverypassword($mysqli, $email, $hash) {
+$email = htmlentities($email);
+if ($stmt = $mysqli->prepare("SELECT * 
+        FROM recuperacao where utilizador = ? and confirmacao = ?
+        ")) {
+        $stmt->bind_param('ss', $email, $hash);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+
+            if( mail($email, 'Reset password', 'Olá '.$email.', sua nova senha: 3uNa0v0u3squ3ce4') ){
+                echo '<p>Foi enviado um e-mail para o seu endereço, Com sua nova Senha!</p>';
+                //altera senha
+                $dados = "UPDATE sr_usuarios_secret SET password='5bafda803e34d3416f9962668477eadb6a6dd6f107154ab998723f5e3fc1cacda7c6d890ac6f301583e51d0650f04b85bfee44ff4ed0fe14ed10d71ecf1306ff', salt='2bd64748fef7015b3711d60dbf12353c52d5dbe5c1cb8f4d00815b98ed6815925d7d983f6fc2571dd94c2ff3e7385009e3f5d748c2fe11619b6c098032b3eb54' WHERE email='$email'";
+                $result = $mysqli->query($dados);
+                if (!$result) {
+                    echo "Não foi possivel alterar a senha tente novamente!";
+                }else {
+                    echo "Senha Alterada com Sucesso!";
+                    $dados = "DELETE from recuperacao WHERE utilizador='$email'";
+                    $result = $mysqli->query($dados);
+                 }
+
+
+            }else {
+                echo '<p>Houve um erro ao enviar o email (o servidor suporta a função mail?)</p>';
+            }
+        }else{
+            echo 'Dados incorretos!';
+        }
+        }
+    }
 
 
 

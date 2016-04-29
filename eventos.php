@@ -24,7 +24,7 @@ include_once 'includes/functions.php';
 
 		<!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>-->
 
-		<script src="assets/js/flipclock.js"></script>	
+	<script src="assets/js/flipclock.js"></script>	
 
 	<link rel="stylesheet" href="assets/css/font-icons/entypo/css/entypo.css">
 	<!--<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Noto+Sans:400,700,400italic">-->
@@ -65,12 +65,33 @@ include_once 'includes/functions.php';
 						<span class="title">Eventos</span>
 					</a>
 				</li>
-				<li class="opened active">
+				<li class="">
 					<a href="profile.php">
 						<i class="entypo-user"></i>
 						<span class="title">Profile</span>
 					</a>
 				</li>
+				<li class="">
+					<a href="#">
+						<i class="entypo-layout"></i>
+						<span class="title">Team</span>
+					</a>
+					<ul>
+						<li>
+							<a href="newteam.php">
+							<i class="entypo-layout"></i>
+							<span class="title">Novo Team</span>
+							</a>
+						</li>
+						<li>
+							<a href="enterteam.php">
+							<i class="entypo-layout"></i>
+							<span class="title">Enter Team</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+
 			</ul>
 						
 			
@@ -104,45 +125,7 @@ include_once 'includes/functions.php';
 						</tr>
 					</thead>
 					
-					<tbody>
-						<tr>
-							<td><strong>OLD RELIGION</strong></td>
-							<td><center>16/04/2016</center></td>
-							<td><center>SHC{}</center></td>
-							<td><center><button type="button" onclick="window.location='oldreligion.php'" class="btn btn-blue">iniciar</button></center></td>
-                            <td><center><button type="button" onclick="window.location='score_oldreligion.php'" class="btn btn-blue">Ranking</button></center></td>
-						</tr>
-					</tbody>
-					
-					<tbody>
-						<tr>
-							<td><strong>AMERICAN IDIOT</strong></td>
-							<td><center>23/03/2016</center></td>
-							<td><center>SHC{}</center></td>
-							<td><center><button type="button" onclick="window.location='eua.php'" class="btn btn-blue">Iniciar</button></center></td>
-                            <td><center><button type="button" onclick="window.location='score_eua.php'" class="btn btn-blue">Ranking</button></center></td>
-						</tr>
-					</tbody>
-					
-					<tbody>
-						<tr>
-							<td><strong>OPERAÇÃO LAVA-JATO</strong></td>
-							<td><center>11/03/2016</center></td>
-							<td><center>HC{}</center></td>
-							<td><center><button type="button" onclick="window.location='lavajato.php'" class="btn btn-blue">Iniciar</button></center></td>
-                            <td><center><button type="button" onclick="window.location='score_lavajato.php'" class="btn btn-blue">Ranking</button></center></td>
-						</tr>
-					</tbody>					
-
-					<tbody>
-						<tr>
-							<td><strong>SUCURI HC</strong></td>
-							<td><center>03/03/2016</center></td>
-							<td><center>HC{}</center></td>
-							<td><center><button type="button" onclick="window.location='sucuri.php'" class="btn btn-blue">Iniciar</button></center></td>
-                            <td><center><button type="button" onclick="window.location='score_sucuri.php'" class="btn btn-blue">Ranking</button></center></td>
-						</tr>
-					</tbody>
+					<?php carregaeventos($mysqli); ?>
 				</table>
 
                 </div>
@@ -170,6 +153,15 @@ include_once 'includes/functions.php';
                 <span class="error">Você não tem autorização para acessar esta página.</span> Login <a href="../index.php">login</a>.
             </p>
         <?php endif; ?>
+
+
+
+	<script src="assets/js/gsap/main-gsap.js"></script>
+	<script src="assets/js/joinable.js"></script>
+	<script src="assets/js/resizeable.js"></script>
+	<script src="assets/js/neon-custom.js"></script>
+
+
 	
 </body>
 </html>

@@ -51,67 +51,62 @@ if (login_check($mysqli) == true) {
 </head>
 <body class="page-body login-page login-form-fall" onload="document.getElementById('email').focus();">
 
-
-<!-- This is needed when you send requests via Ajax -->
 	
-
-	<div class="login-form">
-				
-			<center><img src="assets/images/2logo.png" width="310" height="180"> </center>
-
-			<div class="login-content">
+<div class="login-container">
 	
-			<?php
-				if (isset($_GET['error'])) {
-				echo '<center><p class="error">Erro ao fazer o login!</p></center>';
-				}
-				?>
-			<div class="form-login-error">
-				<h3>Login inválido</h3>
-				<p>Enter <strong>demo</strong>/<strong>demo</strong> as login and password.</p>
-			</div>
+	<div class="login-content">
 			
-			<form action="includes/process_login.php" method="post" role="form" id="login_form">
+			<center><img src="assets/images/2logo.png" width="310" height="180"> </center>
+			
+			<?php
+ 				if(!empty($_POST) ){
+   			 		recoverypassword($mysqli,$_POST['email']);
+  				}else {
+  					echo '<p class="description">Digite seu e-mail , e nós iremos enviar o link de redefinição.</p>';
+  				}
+			?>
+			
+		</div>
+		
+	</div>
+	
+	
+	<div class="login-form">
+		
+		<div class="login-content">
+			
+			<form method="post">
 				
-				<div class="form-group">
-					
-					<div class="input-group">
-						<div class="input-group-addon">
-							<i class="entypo-user"></i>
+					<div class="form-group">
+							<div class="input-group">
+								<div class="input-group-addon">
+									<i class="entypo-mail"></i>
+								</div>
+								
+								<input type="text" class="form-control" name="email" id="email" placeholder="Email" data-mask="email" autocomplete="off" />
+							</div>
 						</div>
 						
-						<input type="text" class="form-control"  name="email" id="email" placeholder="Email" />
-					</div>
-					
-				</div>
-				
-				<div class="form-group">
-					
-					<div class="input-group">
-						<div class="input-group-addon">
-							<i class="entypo-key"></i>
-						</div>
-						
-						<input type="password" class="form-control" name="password" id="password" placeholder="Password" autocomplete="off" />
-					</div>
-				
-				</div>
-				
-				<div class="form-group">
-					<button type="submit" onclick="formhash(this.form, this.form.password);" class="btn btn-primary btn-block btn-login">
-						<i class="entypo-login"></i>
-						Login In
-					</button>
-					<button type="button" onclick="window.location.href='lostpassword.php'" class="btn btn-primary btn-block">
-						<i class="entypo-cross"></i>
-						Esqueci a senha!
-					</button>
-					<button type="button" onclick="window.location.href='register.php'" class="btn btn-primary btn-block">
+						<div class="form-group">
+							<button type="submit" class="btn btn-info btn-block btn-login">
+								>>> Recovery
+							</button>
+							<button type="button" onclick="window.location.href='index.php'" class="btn btn-primary btn-block">
 						<i class="entypo-user"></i>
-						Register
+						Return Login Page
 					</button>
-				</div>
+						</div>
+						
+
+					
+					</div>	
+
 				
+				
+			</form>
+			
+		
+			</div>
 			
 		</div>
 		
@@ -128,7 +123,8 @@ if (login_check($mysqli) == true) {
 	<script src="assets/js/resizeable.js"></script>
 	<script src="assets/js/neon-api.js"></script>
 	<script src="assets/js/jquery.validate.min.js"></script>
-	<script src="assets/js/neon-login.js"></script>
+	<script src="assets/js/neon-forgotpassword.js"></script>
+	<script src="assets/js/jquery.inputmask.bundle.min.js"></script>
 
 
 	<!-- JavaScripts initializations and stuff -->
