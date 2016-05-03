@@ -217,17 +217,17 @@ function carregascore($mysqli, $evento) {
 //chama os botões de cada flag
 function carregabotoes($mysqli, $tipo, $evento) {
 	$user_id = htmlentities($_SESSION['user_id']);
-    if ($stmt = $mysqli->prepare("SELECT idflag, valor 
+    if ($stmt = $mysqli->prepare("SELECT flag.idflag, flag.valor, (select resolvidas.id from resolvidas where resolvidas.flagid = flag.idflag and resolvidas.userid = ? ) as respondida 
         FROM flag
-		WHERE tipo = ? and evento = ?
+		WHERE flag.tipo = ? and flag.evento = ?
         ")) {
-        $stmt->bind_param('ss', $tipo, $evento);  
+        $stmt->bind_param('iss', $user_id, $tipo, $evento);  
         $stmt->execute();
         $result = $stmt->get_result();
 		if ($result->num_rows > 0) {
 		while ($row = $result->fetch_array(MYSQLI_NUM))
 			{
-				if (flagresolvida($row[0]) == true){
+				if ($row[2] > ""){
 				echo '<button type="button" class="btn btn-success" data-toggle="modal" data-target="">'.$row[1].'</button> ';  	
 				}else {
 				echo '<button type="button" class="btn btn-default" data-toggle="modal" data-target="#'.$tipo.$row[1].'">'.$row[1].'</button> ';  	
@@ -368,30 +368,6 @@ function ranking($mysqli,$evento) {
 			}
 		}
 	}
-}
-
-
-//unica função zuada ainda!
-function flagresolvida($flagid) {
-$HOST = "localhost";
-$USER = "root";
-$PASSWORD = "root";
-$DATABASE = "sucurihc_ctf";
-$conn1 = new mysqli($HOST, $USER, $PASSWORD, $DATABASE);
-if ($conn1->connect_error) {
-    die("Connection failed: " . $conn1->connect_error);
-} 
-$userid = $_SESSION['user_id'];
-$conn1->set_charset('utf8');
-//$sql = "SELECT resolvidas.flagid,resolvidas.userid, flag.idflag, flag.titulo, flag.descricao, flag.valor FROM `resolvidas`, `flag` WHERE flag.tipo = 'web' and resolvidas.userid = ".$userresolve." ";
-$sql1 = "SELECT * from resolvidas where flagid=".$flagid." and userid=".$userid."";
-$result1 = $conn1->query($sql1);
-if ($result1->num_rows > 0) {
-	while($row = $result1->fetch_assoc()) {
-	 return true;
-	}
-}
-$conn1->close();
 }
 
 function inserenewteam($mysqli,$teamname) {
@@ -587,6 +563,26 @@ if ($stmt = $mysqli->prepare("SELECT *
         }
         }
     }
+
+function alterasenha($mysqli,$p){
+
+    $user_id = htmlentities($_SESSION['user_id']);
+    $password = htmlentities($p);
+    
+    $random_salt = hash('sha512', uniqid(openssl_random_pseudo_bytes(16), TRUE));
+    $password = hash('sha512', $password . $random_salt);
+ 
+        
+        if ($insert_stmt = $mysqli->prepare("UPDATE sr_usuarios_secret set password = ?, salt = ? where id=?")) {
+            $insert_stmt->bind_param('ssi', $password, $random_salt, $user_id);
+             
+            if (! $insert_stmt->execute()) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+}
 
 
 

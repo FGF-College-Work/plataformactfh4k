@@ -45,7 +45,6 @@ if (isset($_POST['username'], $_POST['email'], $_POST['p'])) {
  
     if (empty($error_msg)) {
         // Crie um salt aleatório
-        echo $password;
         $random_salt = hash('sha512', uniqid(openssl_random_pseudo_bytes(16), TRUE));
  
         // Crie uma senha com salt 
