@@ -1,7 +1,11 @@
 <?php
-include_once 'includes/db_connect.php';
-include_once 'includes/functions.php';
- sec_session_start();
+session_start();
+require_once 'class/Conexao.php';
+require_once 'class/usuario.php';
+require_once 'class/Team.php';
+
+$team = new team();
+$team->setUser($_SESSION['user_id']);
 
 
 ?>
@@ -32,22 +36,14 @@ include_once 'includes/functions.php';
 
 	<script src="assets/js/jquery-1.11.0.min.js"></script>
 	<script>$.noConflict();</script>
-    
-	<!--[if lt IE 9]><script src="assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-
-	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-	<!--[if lt IE 9]>
-		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-	<![endif]-->
-
 
 </head>
 <?php
 if (isset($_POST['teamhash'])) {
-    $teamhash = $_POST['teamhash']; 
+   
+      $teamhash = filter_input(INPUT_POST, "teamhash", FILTER_SANITIZE_MAGIC_QUOTES);
     	
-	if (enterteam($mysqli,$teamhash) == true) {
+	if ($team->enterTeam($teamhash) == true) {
 	  
     } else {
       echo '<script>alert("Não foi possivel entrar com esse HashTeam!")</script>';
@@ -57,7 +53,7 @@ if (isset($_POST['teamhash'])) {
 ?>
 
 <body class="page-body">
-<?php if (login_check($mysqli) == true) : ?>
+<?php if (isset($_SESSION['username'])) : ?>
 <div class="page-container horizontal-menu">
 
 	
@@ -106,7 +102,7 @@ if (isset($_POST['teamhash'])) {
 			<!-- notifications and other links -->
 			<ul class="nav navbar-right pull-right">
 				<li class="dropdown">
-					<a href="/includes/logout.php">
+					<a href="includes/logout.php">
 						Log Out <i class="entypo-logout right"></i>
 					</a>
 				</li>	
@@ -139,7 +135,7 @@ if (isset($_POST['teamhash'])) {
 								<label for="field-1" class="col-sm-3 control-label">Digite o HashTeam:</label>
 								
 								<div class="col-sm-5">
-									<input type="text" class="form-control" name="teamhash" value="<?php carreganometeam($mysqli); ?>" autofocus>
+									<input type="text" class="form-control" name="teamhash" value="<?php $team->carregaNomeTeam(); ?>" autofocus>
 								</div>
 
 							</div>

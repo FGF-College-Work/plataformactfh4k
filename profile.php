@@ -1,8 +1,11 @@
 <?php
-include_once 'includes/db_connect.php';
-include_once 'includes/functions.php';
- sec_session_start();
+require_once 'class/Conexao.php';
+require_once 'class/usuario.php';
 
+session_start();
+
+$usuario = new usuario();
+$usuario->setUser($_SESSION['user_id'])
 
 ?>
 <!DOCTYPE html>
@@ -33,21 +36,12 @@ include_once 'includes/functions.php';
 	<script src="assets/js/jquery-1.11.0.min.js"></script>
 	<script>$.noConflict();</script>
     
-	<!--[if lt IE 9]><script src="assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-
-	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-	<!--[if lt IE 9]>
-		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-	<![endif]-->
-
-
 </head>
 <?php
 if (isset($_POST['username'])) {
     $username = $_POST['username']; 
     
-	if (atualizanome($mysqli, $username) == true) {
+	if ($usuario->atualizaNome($username) == true) {
 	  echo '<script>alert("Username Alterado com sucesso!")</script>';
     } else {
       echo '<script>alert("Não foi possivel alterar para esse username!")</script>';
@@ -57,7 +51,7 @@ if (isset($_POST['username'])) {
 ?>
 
 <body class="page-body">
-<?php if (login_check($mysqli) == true) : ?>
+<?php if (isset($_SESSION['username'])) : ?>
 <div class="page-container horizontal-menu">
 
 	
@@ -139,7 +133,7 @@ if (isset($_POST['username'])) {
 								<label for="field-1" class="col-sm-3 control-label">Username:</label>
 								
 								<div class="col-sm-5">
-									<input type="text" class="form-control" name="username" value="<?php carreganome($mysqli); ?>" autofocus>
+									<input type="text" class="form-control" name="username" value="<?php echo $_SESSION['username']; ?>" autofocus>
 								</div>
 							</div>
 			
@@ -147,12 +141,12 @@ if (isset($_POST['username'])) {
 								<label for="field-2" class="col-sm-3 control-label">Time:</label>
 								
 								<div class="col-sm-5">
-									<input type="text" class="form-control" id="time" value="<?php carreganometeam($mysqli); ?>">
+                                                                    <input type="text" class="form-control" id="time" value="<?php $usuario->carregaNomeTeam(); ?>">
 								</div>
 							</div>
 
 							<div class="form-group">
-								<div <div class="col-sm-offset-3 col-sm-6">
+								<div <div class="col-sm-offset-3 col-sm-5">
 									<button type="submit" class="btn btn-success">Salvar Alterações</button>
 									<button type="button" onclick="window.location='alterar_senha.php'" class="btn btn-info">Alterar Senha</button>
 								</div> 
@@ -172,7 +166,7 @@ if (isset($_POST['username'])) {
 		
 				<div class="tile-stats tile-green">
 					<div class="icon"><i class="entypo-flag"></i></div>
-					<div class="num" data-start="0" data-end="<?php totalflagresolvidas($mysqli); ?>" data-postfix="" data-duration="1500" data-delay="0">0</div>
+                                        <div class="num" data-start="0" data-end="<?php $usuario->totalFlagResolvidas(); ?>" data-postfix="" data-duration="1500" data-delay="0">0</div>
 		
 					<h3>Flags Resolvidas</h3>
 					<p>All events</p>
@@ -184,7 +178,7 @@ if (isset($_POST['username'])) {
 		
 				<div class="tile-stats tile-blue">
 					<div class="icon"><i class="entypo-chart-bar"></i></div>
-					<div class="num" data-start="0" data-end="<?php totaleventos($mysqli); ?>" data-postfix="" data-duration="1500" data-delay="600">0</div>
+                                        <div class="num" data-start="0" data-end="<?php $usuario->totalEventos(); ?>" data-postfix="" data-duration="1500" data-delay="600">0</div>
 		
 					<h3>Eventos</h3>
 					<p> :)</p>
@@ -196,7 +190,7 @@ if (isset($_POST['username'])) {
 		
 				<div class="tile-stats tile-green">
 					<div class="icon"><i class="entypo-infinity"></i></div>
-					<div class="num" data-start="0" data-end="<?php totalpontos($mysqli); ?>" data-postfix="" data-duration="1500" data-delay="1200">0</div>
+                                        <div class="num" data-start="0" data-end="<?php $usuario->totalPontos(); ?>" data-postfix="" data-duration="1500" data-delay="1200">0</div>
 		
 					<h3>Pontos</h3>
 					<p>Totalizador de todos eventos!</p>

@@ -1,9 +1,11 @@
 <?php
-include_once 'includes/db_connect.php';
-include_once 'includes/functions.php';
- sec_session_start();
+session_start();
+require_once 'class/Conexao.php';
+require_once 'class/usuario.php';
+require_once 'class/Team.php';
 
-
+$team = new team();
+$team->setUser($_SESSION['user_id']);
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -32,32 +34,23 @@ include_once 'includes/functions.php';
 
 	<script src="assets/js/jquery-1.11.0.min.js"></script>
 	<script>$.noConflict();</script>
-    
-	<!--[if lt IE 9]><script src="assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-
-	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-	<!--[if lt IE 9]>
-		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-	<![endif]-->
 
 
 </head>
 <?php
 if (isset($_POST['teamname'])) {
-    $teamname = $_POST['teamname']; 
-    
-	if (inserenewteam($mysqli,$teamname) == true) {
-	  echo '<script>alert("Team Alterado com sucesso!")</script>';
+    $teamName = filter_input(INPUT_POST, "teamname", FILTER_SANITIZE_MAGIC_QUOTES);
+
+    if ($team->inserenewTeam($teamName) == true) {
+        echo '<script>alert("Team Alterado com sucesso!")</script>';
     } else {
-      echo '<script>alert("Não foi possivel Criar um novo time com esse nome!")</script>';
+        echo '<script>alert("Não foi possivel Criar um novo time com esse nome!")</script>';
     }
-	
 }
 ?>
 
 <body class="page-body">
-<?php if (login_check($mysqli) == true) : ?>
+<?php if (isset($_SESSION['username'])) : ?>
 <div class="page-container horizontal-menu">
 
 	
@@ -106,7 +99,7 @@ if (isset($_POST['teamname'])) {
 			<!-- notifications and other links -->
 			<ul class="nav navbar-right pull-right">
 				<li class="dropdown">
-					<a href="/includes/logout.php">
+					<a href="includes/logout.php">
 						Log Out <i class="entypo-logout right"></i>
 					</a>
 				</li>	
@@ -139,14 +132,14 @@ if (isset($_POST['teamname'])) {
 								<label for="field-1" class="col-sm-3 control-label">Nome Team:</label>
 								
 								<div class="col-sm-5">
-									<input type="text" class="form-control" name="teamname" value="<?php carreganometeam($mysqli); ?>" autofocus>
+                                                                    <input type="text" class="form-control" name="teamname" value="<?php $team->carregaNomeTeam(); ?>" autofocus>
 								</div>
 							</div>
 							<div class="form-group">
 								<label for="field-1" class="col-sm-3 control-label">Hash Team:</label>
 								
 								<div class="col-sm-5">
-									<input type="text" class="form-control" name="hash" value="<?php carregahashteam($mysqli); ?>">
+                                                                    <input type="text" class="form-control" name="hash" value="<?php $team->carregaHashTeam(); ?>">
 								</div>
 							</div>
 
@@ -200,9 +193,17 @@ if (isset($_POST['teamname'])) {
 
 
     <script src="assets/js/gsap/main-gsap.js"></script>
-	<script src="assets/js/joinable.js"></script>
-	<script src="assets/js/resizeable.js"></script>
-	<script src="assets/js/neon-custom.js"></script>
+        <script src="assets/js/joinable.js"></script>
+        <script src="assets/js/resizeable.js"></script>
+        <script src="assets/js/neon-custom.js"></script>
+        <script src="assets/js/jquery.dataTables.min.js"></script>
+        <script src="assets/js/datatables/TableTools.min.js"></script>
+        <script src="assets/js/dataTables.bootstrap.js"></script>
+        <script src="assets/js/datatables/jquery.dataTables.columnFilter.js"></script>
+        <script src="assets/js/datatables/lodash.min.js"></script>
+        <script src="assets/js/datatables/responsive/js/datatables.responsive.js"></script>
+        
+        <script src="assets/js/toastr.js"></script>
 	
 </body>
 </html>

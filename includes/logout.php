@@ -1,7 +1,5 @@
 <?php
-include_once 'functions.php';
-sec_session_start();
- 
+
 // Desfaz todos os valores da sessão  
 $_SESSION = array();
  
