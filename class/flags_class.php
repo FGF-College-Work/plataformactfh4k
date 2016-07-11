@@ -45,8 +45,10 @@ class flags_class extends Conexao {
             if ($valida_score->rowCount() > 0):
                 
             else:
-                $sql = "INSERT INTO score (score,iduser,time,evento) VALUES ('0','$user_id',NOW(),'$this->evento')";
-                $pdo->query($sql);
+                $insere_score = $pdo->prepare("INSERT INTO score (score,iduser,time,evento) VALUES ('0', ? ,NOW(), ?)");
+                $insere_score->bindValue(1, $user_id);
+                $insere_score->bindValue(2, $this->getEvento());
+                $insere_score->execute();
                 $this->scoreTeam($idteam);
             endif;
             
@@ -62,8 +64,10 @@ class flags_class extends Conexao {
         if ($valida_score_t->rowCount() > 0):
             
         else:
-            $sqlteam = "INSERT INTO scoreteam (score,idteam,time,evento) VALUES ('0','$idteam',NOW(),'$this->evento')";
-            $pdo->query($sqlteam);
+            $insere_score = $pdo->prepare("INSERT INTO scoreteam (score,idteam,time,evento) VALUES ('0',?,NOW(), ?)");
+            $insere_score->bindValue(1, $idteam);
+            $insere_score->bindValue(2, $this->getEvento());
+            $insere_score->execute();
         endif;
     }
 
@@ -77,9 +81,20 @@ class flags_class extends Conexao {
         if ($valida->rowCount() > 0):
             if ($dados->resposta == $this->resposta):
                 //insere na tabela resolvidas
-                $pdo->query("INSERT INTO resolvidas (flagid,userid,idteam,valor,evento, dhresposta) VALUES ('$this->flagid','$user_id','$idteam','$dados->valor','$this->evento', NOW())");
+                $insere_resolvidas = $pdo->prepare("INSERT INTO resolvidas (flagid,userid,idteam,valor,evento, dhresposta) VALUES (?, ?, ?, ?, ?, NOW())");
+                $insere_resolvidas->bindValue(1, $this->getFlagid());
+                $insere_resolvidas->bindValue(2, $user_id);
+                $insere_resolvidas->bindValue(3, $idteam);
+                $insere_resolvidas->bindValue(4, $dados->valor);
+                $insere_resolvidas->bindValue(5, $this->getEvento());
+                $insere_resolvidas->execute();
                 //atualiza o score individual 
-                $pdo->query("UPDATE score SET score=(SELECT sum(valor) as valor FROM resolvidas WHERE userid='$user_id' and evento= '$this->evento'), time=NOW() WHERE iduser='$user_id' and evento='$this->evento'");
+                $atualiza_resolvidas = $pdo->prepare("UPDATE score SET score=(SELECT sum(valor) as valor FROM resolvidas WHERE userid= ? and evento= ?), time=NOW() WHERE iduser= ? and evento= ?");
+                $atualiza_resolvidas->bindValue(1, $user_id);
+                $atualiza_resolvidas->bindValue(2, $this->getEvento());
+                $atualiza_resolvidas->bindValue(3, $user_id);
+                $atualiza_resolvidas->bindValue(4, $this->getEvento());
+                $atualiza_resolvidas->execute();
                 //verifica se o team já respondeu o chall
                 $verifica_team = $pdo->prepare('SELECT id FROM resolvidas WHERE flagid = ? and idteam = ? and evento = ?');
                 $verifica_team->bindValue(1, $this->getFlagid());
@@ -94,9 +109,11 @@ class flags_class extends Conexao {
                     $score_team->execute();
                     $dados_score = $score_team->fetch(PDO::FETCH_OBJ);
                     //atualiza score team
-                    $sql = "UPDATE scoreteam SET score='$dados_score->score'+'$dados->valor', time=NOW() WHERE idteam='$idteam' and evento='$this->evento'";
-                    $pdo->query($sql);
-                endif;
+                    $atualiza_scoreteam = $pdo->prepare("UPDATE scoreteam SET score='$dados_score->score'+'$dados->valor', time=NOW() WHERE idteam= ? and evento= ? ");
+                    $atualiza_scoreteam->bindValue(1, $idteam);
+                    $atualiza_scoreteam->bindValue(2, $this->getEvento());
+                    $atualiza_scoreteam->execute();
+                   endif;
                 //fazendo tudo isso ai acima retorna true
                 return true;
             else:

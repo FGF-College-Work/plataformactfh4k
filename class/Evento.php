@@ -12,9 +12,9 @@ class Evento extends Conexao {
 	echo "<td>{$linha[1]}</td>";
 	echo "<td>{$linha[2]}</td>";
 	echo "<td>{$linha[3]}</td>";
-	echo '<td><center><button type="button" onclick="window.location='."'flag.php?evento=$linha[0]'".'" class="btn btn-blue">iniciar</button></center></td>';
-	echo '<td><center><button type="button" onclick="window.location='."'score.php?evento=$linha[0]'".'" class="btn btn-red">Ranking</button></center></td>';
-        echo '<td><center><button type="button" onclick="window.location='."'score_team.php?evento=$linha[0]'".'" class="btn btn-green">Ranking</button></center></td>';
+	echo '<td><center><button type="button" onclick="window.location='."'flag.php?evento=$linha[0]'".'" class="btn btn-success">iniciar</button></center></td>';
+	echo '<td><center><button type="button" onclick="window.location='."'score.php?evento=$linha[0]'".'" class="btn btn-danger">Ranking</button></center></td>';
+        echo '<td><center><button type="button" onclick="window.location='."'score_team.php?evento=$linha[0]'".'" class="btn btn-warning">Ranking - Team</button></center></td>';
         echo "</tr>";
         }
     }
