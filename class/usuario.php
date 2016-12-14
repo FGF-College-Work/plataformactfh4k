@@ -12,16 +12,19 @@ class usuario extends Conexao {
         return $this->user_id;
     }
 
-    public function atualizaNome($username) {
+     public function atualizaNome($username) {
+        try {
         $username = htmlentities($username);
         $pdo = parent::getDB();
-        $dados = "UPDATE sr_usuarios_secret SET username='$username' WHERE id='$this->user_id'";
-        if ($pdo->query($dados)):
-            $_SESSION['username'] = $username;
-            return true;
-        else:
+        $dados = $pdo->prepare("UPDATE sr_usuarios_secret SET username=? WHERE id=?");
+        $dados->bindValue(1, $username);
+        $dados->bindValue(2, $this->user_id);
+        $dados->execute();
+        $_SESSION['username'] = $username;
+        return true;
+        } catch (Exception $ex) {
             return false;
-        endif;
+        }
     }
 
     public function carregaNomeTeam() {
